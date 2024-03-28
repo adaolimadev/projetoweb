@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD</title>
+    <style>
+        /* Estilos para as divs */
+        .container {
+            display: flex;
+        }
+        .left {
+            border: 5px solid;
+            flex: 1;
+            padding: 20px;
+        }
+        .right {
+            flex: 1;
+            padding: 20px;
+            border: 5px solid;
+        }
+    </style>
+</head>
+<body>
+    
+<div class="container">
+    <!-- Div da esquerda com formulário -->
+    <div class="left">
+        <h2>Formulário</h2>
+            <label for="nome">Nome:</label><br>
+            <input type="text" id="inputNome" name="nome"><br>
+            <label for="email">E-mail:</label><br>
+            <input type="email" id="inputEmail" name="email"><br>
+            <label for="tel">Telefone:</label><br>
+            <input type="tel" id="inputTelefone" name="tel"><br><br>
+            <button onclick="salvar()">Salvar</button>
+            <button onclick="cancelar()">Cancelar</button>
+    </div>
+
+    <!-- Div da direita com tabela -->
+    <div class="right">
+        <h2>Tabela</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>E-mail</th>
+                    <th>Telefone</th>
+                    <th>Editar</th>
+                    <th>Excluir</th>
+                </tr>
+            </thead>
+            <tbody  id="tabela-corpo">
+                <!-- Aqui vai ser preenchido com javascript -->
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+<script>
+    var arrayPessoas = [];
+
+    // Carregar dados do localStorage ao carregar a página
+    window.onload = function() {
+        if(localStorage.getItem('pessoas')) {
+            arrayPessoas = JSON.parse(localStorage.getItem('pessoas'));
+            atualizaTabela();
+        }
+    }
+
+    function objetoPessoa (novoNome, novoEmail, novoTelefone){
+        this.nome = novoNome,
+        this.email = novoEmail,
+        this.telefone = novoTelefone
+    }
+
+    function salvar(){
+        var xnome = document.getElementById('inputNome').value
+        var xemail = document.getElementById('inputEmail').value
+        var xtelefone = document.getElementById('inputTelefone').value
+
+        var novaPessoa = new objetoPessoa(xnome, xemail, xtelefone)
+
+        arrayPessoas.push(novaPessoa)
+
+        atualizaTabela()
+        limpaCampos()
+
+        // Salvar dados no localStorage
+        localStorage.setItem('pessoas', JSON.stringify(arrayPessoas));
+
+        alert('Dados armazenados com sucesso!')
+    }
+
+    function atualizaTabela(){
+        limpaTabela()
+
+        arrayPessoas.forEach(function(pessoa, index) {
+            var novaLinha = document.createElement('tr')
+
+            var colunaNome = document.createElement('td')
+            var colunaEmail = document.createElement('td')
+            var colunaTelefone = document.createElement('td')
+            var colunaExcluir = document.createElement('td')
+            var colunaEditar = document.createElement('td')
+
+            colunaNome.textContent = pessoa.nome
+            colunaEmail.textContent = pessoa.email
+            colunaTelefone.textContent = pessoa.telefone
+            colunaEditar.innerHTML = `<button onclick="editar(${index})">Edit</button>`
+            colunaExcluir.innerHTML = `<button onclick="excluir(${index})">Delete</button>`
+            
+            novaLinha.appendChild(colunaNome)
+            novaLinha.appendChild(colunaEmail)
+            novaLinha.appendChild(colunaTelefone)
+            novaLinha.appendChild(colunaEditar)
+            novaLinha.appendChild(colunaExcluir)
+           
+            var tabela = document.getElementById('tabela-corpo')
+            tabela.appendChild(novaLinha)
+        })
+    }
+
+    function excluir(id){
+       var valida = confirm('Deseja realmente excluir a pessoa: '+ arrayPessoas[id].nome)
+
+       if(valida === true){
+        arrayPessoas.splice(id,1)
+        atualizaTabela()
+        // Salvar dados atualizados no localStorage
+        localStorage.setItem('pessoas', JSON.stringify(arrayPessoas));
+       } else {
+        return false
+       }
+    }
+
+    function limpaTabela(){
+        var tabelaCorpo = document.getElementById('tabela-corpo')
+        tabelaCorpo.innerHTML = ''
+    }
+
+    function limpaCampos(){
+        document.getElementById('inputNome').value = ''
+        document.getElementById('inputEmail').value = ''
+        document.getElementById('inputTelefone').value = ''
+    }
+
+    function cancelar(){
+        limpaCampos()
+        limpaTabela()
+        atualizaTabela()
+    }
+
+</script>
+</html>
