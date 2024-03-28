@@ -1,0 +1,4 @@
+Arquivos de cnfigurações
+BD: 192.168.1.250
+Login: teste
+Pass: 3123ebageuyqote834264t3fgr632tge27te6f2e6723re236r4236rfre66
